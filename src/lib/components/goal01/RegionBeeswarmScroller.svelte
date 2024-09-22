@@ -19,11 +19,6 @@
   export let parentWidth;
   export let parentHeight;
 
-  // Add these console logs
-  $: console.log('RegionBeeswarmScroller data:', data);
-  $: console.log('RegionBeeswarmScroller dimensions:', { parentWidth, parentHeight });
-  $: console.log('RegionBeeswarmScroller activeScene:', activeScene);
-
   let margins = {
     top: 0,
     right: 20,

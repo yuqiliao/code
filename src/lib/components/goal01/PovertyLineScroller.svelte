@@ -28,6 +28,7 @@
 
   export let data;
   export let activeScene = { index: 0 };
+  $: console.log('PovertyLineScoller activeScene:', activeScene);
   export let xaxistitle;
   export let xaxisunits;
   export let yaxistitle;
@@ -140,7 +141,9 @@
     countriesWithData.forEach((d) => {
       let path = geoPath().projection(projection)(d);
       d.countryPath = path;
-      d.countryCirclePath = toCircle(path, xScale(d.gdp), yScale(d.povertyline), radius)(1);
+      d.countryCirclePath = toCircle(path, xScale(d.gdp), yScale(d.povertyline), radius, radius)(1);
+      //YL: this is where d.countryCirclePath is created. I can replace toCircle with toRect as below if needed.
+      //d.countryCirclePath = toRect(path, xScale(d.gdp), yScale(d.povertyline), radius, radius)(1););
     });
     dataReady = true;
 
