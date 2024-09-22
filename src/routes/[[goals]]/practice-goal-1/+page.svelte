@@ -13,16 +13,17 @@
   console.log('data', data);
   const { goal01 } = data;
   const content = goal01.content;
-  console.log('content', content);
 
-  // Add this default value for dataDownloadUrl
-  const defaultDataDownloadUrl = '#'; // or any appropriate default value
+  const defaultDataDownloadUrl = '#';
 
   let activeSceneIndex = 0;
   let progress = 0;
   let offset = 0;
 
-  $: console.log('Content:', content);
+  function renderGraphic(item) {
+    const component = item.graphic === 'povertyprojection' ? PovertyProjectionLine : null;
+    return component;
+  }
 </script>
 
 <div class="practice-goal-1">
@@ -62,6 +63,29 @@
           {/each}
         </svelte:fragment>
       </WideSideBySide>
+    {:else if item.type === 'vis'}
+      <VisContainer
+        title={item.title}
+        subtitle={item.subtitle}
+        source={item.source}
+        note={item.note}
+        visdescription={item.visdescription}
+        dataDownloadUrl={item.dataDownloadUrl || defaultDataDownloadUrl}
+        shareUrl={item.shareUrl}
+        shareImg={item.shareImg}
+        shareTitle={item.shareTitle}
+        graphic={item.graphic}
+        let:parentWidth
+        let:parentHeight
+      >
+        <svelte:component
+          this={renderGraphic(item)}
+          activeScene={{ index: 0 }}
+          {parentWidth}
+          {parentHeight}
+          data={data[item.path.split('.').pop() + 'Data']}
+        />
+      </VisContainer>
     {:else if item.type === 'text_emphasis'}
       <TextEmphasis {...item} />
     {:else if item.type === 'subhed'}
@@ -112,7 +136,7 @@
   .scene {
     opacity: 0;
     transition: opacity 0.3s ease;
-    margin-bottom: 50vh; /* Adjust this value to control the space between scenes */
+    margin-bottom: 50vh;
   }
 
   .scene.active {
@@ -120,6 +144,6 @@
   }
 
   .scene:last-child {
-    margin-bottom: 100vh; /* Ensure there's enough space to scroll past the last scene */
+    margin-bottom: 100vh;
   }
 </style>

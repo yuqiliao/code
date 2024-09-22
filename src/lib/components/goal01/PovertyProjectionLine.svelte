@@ -10,6 +10,11 @@
 
   export let data;
   export let covid;
+  export let activeScene = { index: 0 };
+  export let parentWidth;
+  export let parentHeight;
+
+  console.log('PovertyProjectionLine props:', { data, activeScene, parentWidth, parentHeight });
 
   $: projectionData = data.filter((d) => d.year > 2021);
 
@@ -103,3 +108,5 @@
     </svg>
   {/if}
 </div>
+
+<pre>Debug: data length = {data ? data.length : 'no data'}, parentWidth = {parentWidth}, parentHeight = {parentHeight}</pre>
