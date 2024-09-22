@@ -22,6 +22,7 @@
   import LoopFooter from '$lib/external/loop-footer.svelte';
 
   export let data;
+  console.log('data', data);
   $: archie = data?.archie;
   $: goal = data?.goal;
 

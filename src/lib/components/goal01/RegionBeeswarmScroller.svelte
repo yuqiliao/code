@@ -10,7 +10,7 @@
   import * as Tokens from '$lib/styles/vis.js';
 
   export let data;
-  export let activeScene = { index: 0 };
+  export let activeScene = { index: 0, progress: 0, offset: 0 };
   export let abovepovertyline;
   export let belowpovertyline;
   export let extremepoverty;
@@ -18,6 +18,11 @@
   export let yaxisunits;
   export let parentWidth;
   export let parentHeight;
+
+  // Add these console logs
+  $: console.log('RegionBeeswarmScroller data:', data);
+  $: console.log('RegionBeeswarmScroller dimensions:', { parentWidth, parentHeight });
+  $: console.log('RegionBeeswarmScroller activeScene:', activeScene);
 
   let margins = {
     top: 0,
@@ -95,6 +100,8 @@
   $: for (let i = 0, n = Math.ceil(Math.log(simulation19.alphaMin()) / Math.log(1 - simulation19.alphaDecay())); i < n; ++i) {
     simulation19.tick();
   }
+
+  $: currentScene = Math.min(Math.floor(activeScene.index), 5); // Assuming 6 scenes (0-5)
 </script>
 
 {#if w}

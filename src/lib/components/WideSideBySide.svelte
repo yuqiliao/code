@@ -35,9 +35,7 @@
 
   let activeScene;
 
-  // only send out progress+offset if requested:
-  $: if (publish_progress) activeScene = { progress, index, id: scenes?.[index]?.id, offset };
-  $: if (!publish_progress) activeScene = { index, id: scenes?.[index]?.id };
+  $: activeScene = { index, progress, id: scenes?.[index]?.id, offset };
 
   $: activeShareUrl = scenes[activeScene.index]?.shareUrl;
   $: activeShareImg = scenes[activeScene.index]?.shareImg;
@@ -70,41 +68,55 @@
     activeSource = newSource;
     activeNote = newNote;
   }
+
+  let containerHeight;
+  let stickyTop;
+
+  onMount(() => {
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        containerHeight = entry.contentRect.height;
+      }
+    });
+
+    const container = document.querySelector('.side-by-side');
+    if (container) {
+      resizeObserver.observe(container);
+      stickyTop = container.offsetTop;
+    }
+
+    return () => resizeObserver.disconnect();
+  });
 </script>
 
-<div class={'side-by-side layout-full ' + theme + ' ' + visSize} style="--goal-color : var(--color-un-sdg{$activeGoal.number})">
-  <div class="scroller-container">
-    <DynamicScroller bind:index query={'.scene'} expected={scenes?.length} bind:progress bind:offset>
-      <div class="left" class:screenshot={$isScreenshotting} slot="background">
-        <VisContainer
-          title={activeTitle}
-          subtitle={activeSubtitle}
-          source={activeSource}
-          note={activeNote}
-          {visdescription}
-          {dataDownloadUrl}
-          shareUrl={activeShareUrl}
-          shareImg={activeShareImg}
-          {shareTitle}
-          {graphic}
-          inScroller
-          {theme}
-          let:parentWidth
-          let:parentHeight
-        >
-          <slot name="graphic" {activeScene} {data} slot="graphic" {parentWidth} {parentHeight} />
-        </VisContainer>
+<div class="side-by-side" style="--container-height: {containerHeight}px; --sticky-top: {stickyTop}px;">
+  <DynamicScroller bind:index bind:progress bind:offset query=".scene">
+    <div slot="background" class="left">
+      <VisContainer
+        title={activeTitle}
+        subtitle={activeSubtitle}
+        source={activeSource}
+        note={activeNote}
+        {visdescription}
+        {dataDownloadUrl}
+        shareUrl={activeShareUrl}
+        shareImg={activeShareImg}
+        {shareTitle}
+        {graphic}
+        inScroller
+        {theme}
+        let:parentWidth
+        let:parentHeight
+      >
+        <slot name="graphic" {activeScene} {data} slot="graphic" {parentWidth} {parentHeight} />
+      </VisContainer>
+    </div>
+    <div slot="foreground" class="right">
+      <div class="right-inner">
+        <slot name="scenes" {activeScene} />
       </div>
-      <div class="right" slot="foreground">
-        <div class="right-inner">
-          <slot name="scenes" {activeScene} />
-        </div>
-      </div>
-    </DynamicScroller>
-    {#if source}
-      <p class={`source-text`}>{$_('source', { default: 'Source:' })} {@html source}</p>
-    {/if}
-  </div>
+    </div>
+  </DynamicScroller>
 </div>
 
 <style type="text/scss">
